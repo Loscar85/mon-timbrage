@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b1728" />
+  <meta name="description" content="Calculette personnelle d'heures de travail et de timbrages." />
+  <title>Mon timbrage</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">T</span><div><strong>Mon timbrage</strong><span>Calculette d’heures</span></div></div>
+      <button class="icon-button" id="settingsBtn" aria-label="Ouvrir les réglages" title="Réglages">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19 13.4a7 7 0 0 0 0-2.8l2-1.5-2-3.4-2.5 1A7 7 0 0 0 14 5.2L13.7 2h-4L9.4 5.2a7 7 0 0 0-2.4 1.4l-2.6-1-2 3.5 2.1 1.5a7 7 0 0 0 0 2.8l-2 1.5 2 3.4 2.5-1A7 7 0 0 0 9.4 19l.3 3h4l.3-3a7 7 0 0 0 2.5-1.5l2.5 1 2-3.4-2-1.6Z"/></svg>
+      </button>
+    </header>
+
+    <main>
+      <section class="calculator-card">
+        <div class="calculator-heading">
+          <div><span class="eyebrow">Calcul de la journée</span><h1>Mes timbrages</h1></div>
+          <label class="date-field">Date<input id="workDate" type="date" /></label>
+        </div>
+
+        <div class="session-head" aria-hidden="true"><span>Début</span><span></span><span>Fin</span><span>Durée</span><span>1/100e</span><span></span></div>
+        <div id="sessionRows" class="session-rows"></div>
+
+        <div class="calculator-actions">
+          <button class="ghost-button" id="addSessionBtn" type="button">+ Ajouter une plage</button>
+          <button class="ghost-button muted" id="clearDayBtn" type="button">Effacer la journée</button>
+        </div>
+      </section>
+
+      <section class="result-grid" aria-live="polite">
+        <article class="result-card dark">
+          <span class="eyebrow">Total de la journée</span>
+          <strong id="dayTotal">0 h 00</strong>
+          <small>en heures et minutes</small>
+        </article>
+        <article class="result-card hundredths">
+          <span class="eyebrow">Total en 1/100e</span>
+          <strong id="dayDecimal">0,00 h</strong>
+          <small>en heures centésimales</small>
+        </article>
+        <article class="result-card">
+          <span class="eyebrow">Objectif minimum</span>
+          <strong id="dayTarget">8 h 12</strong>
+          <small id="targetDecimal">8,20 h en 1/100e</small>
+        </article>
+        <article class="result-card balance" id="balanceCard">
+          <span class="eyebrow">Différence</span>
+          <strong id="dayBalance">−8 h 12</strong>
+          <small id="balanceMessage">Il reste 8 h 12 à effectuer</small>
+          <small class="balance-decimal" id="balanceDecimal">−8,20 h en 1/100e</small>
+        </article>
+        <article class="result-card departure" id="departureCard">
+          <span class="eyebrow">Tu peux partir à</span>
+          <strong id="departureTime">—</strong>
+          <small id="departureHint">Saisis le début de ta plage actuelle</small>
+        </article>
+      </section>
+
+      <div class="save-bar">
+        <p id="saveStatus">Les calculs se mettent à jour automatiquement.</p>
+        <button class="primary-button" id="saveDayBtn">Enregistrer la journée</button>
+      </div>
+
+      <section class="week-card">
+        <div class="section-heading">
+          <div><span class="eyebrow">Suivi</span><h2 id="weekTitle">Ma semaine</h2></div>
+          <button class="outline-button" id="exportBtn">Exporter en CSV</button>
+        </div>
+        <div class="week-totals">
+          <div><span>Heures enregistrées</span><strong id="weekWorked">0 h 00</strong></div>
+          <div><span>Objectif des jours saisis</span><strong id="weekTarget">0 h 00</strong></div>
+          <div><span>Solde</span><strong id="weekBalance">+0 h 00</strong></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Jour</th><th>Timbrages</th><th>Total</th><th>Total 1/100e</th><th>Différence</th><th><span class="sr-only">Actions</span></th></tr></thead>
+            <tbody id="weekTableBody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="emptyState"><span class="empty-icon">⌁</span><strong>Aucune journée enregistrée</strong><p>Ajoute tes plages horaires, puis enregistre la journée.</p></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="settingsDialog">
+    <form method="dialog" id="settingsForm">
+      <div class="dialog-header"><div><span class="eyebrow">Préférences</span><h2>Réglages</h2></div><button class="close-button" value="cancel" aria-label="Fermer">×</button></div>
+      <div class="form-grid">
+        <label>Objectif journalier en heures décimales<input id="dailyTargetInput" type="number" min="0.01" max="24" step="0.01" value="8.20" required /></label>
+        <label>Jours de travail par semaine<select id="workDays"><option value="5">5 jours</option><option value="4">4 jours</option><option value="6">6 jours</option></select></label>
+      </div>
+      <p class="settings-note"><strong>8,20 heures décimales = 8 h 12 minutes.</strong><br />Les chiffres après la virgule sont des centièmes d’heure, pas des minutes.</p>
+      <div class="dialog-actions spaced"><button type="button" class="danger-button" id="resetBtn">Effacer toutes les données</button><button class="primary-button" value="default">Enregistrer</button></div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
